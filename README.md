@@ -29,9 +29,9 @@ The reserved area immediately follows the super-block, and spans 2047 blocks. It
 
 ## Data Area Format
 
-The data area is used to store all file data. The start of the data area always starts with the root block @ 2048, and it has a total size of `total_blocks - 2048 - bitmap_blocks`.
+The data area is used to store all node and file data. It always starts with the root block at LBA 2048, and it has a total size of `total_blocks - bitmap_blocks - 2048`.
 
-The data for any specific file consumes sequential blocks in the data area (file fragmentation is not supported). The data area may contain unused blocks, where files have been deleted or reduced in size.
+The data for any specific file always consumes sequential blocks in the data area (file fragmentation is not supported), so in the case of appending, if there's not enought free blocks right after the last data block, the entire contents must be rewritten somewhere else.
 
 ### Data Area Node Format
 
@@ -46,11 +46,17 @@ The data for any specific file consumes sequential blocks in the data area (file
 | 0x1FC  | 4    | Next        |
 
 `type` could either be 1, which indicates a directory, or 2, which indicates a file.
+
 `pointer` points to the first data block if it's a file, or points to the first child node if it's a directory.
+
 `size` is the file size in bytes (only applies to files).
+
 `time` is the unix epoch time in which the entry was last modified.
+
 `name` is a 480 character sequence containing the name of the entry.
+
 `parent` contains the index of the node of it's parent directory.
+
 `next` contains the index of the node of the next entry in it's parent directory.
 
 ## Bitmap Area format
