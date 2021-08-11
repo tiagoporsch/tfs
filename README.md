@@ -1,6 +1,6 @@
 # Tiago's File System
 
-An extremely simple file system design. Doesn't support anything besides directories and files with contiguous data. It's currently only used by my hobby operating system, and to be honest, it's better to keep it this way. Because it sucks.
+An extremely simple file system design. Doesn't support much besides directories and files. It's currently only used by my hobby operating system, and to be honest, it's better to keep it this way. Because it sucks.
 
 ## File System Format Overview
 
