@@ -17,10 +17,10 @@ The file system uses different areas on the physical media for different purpose
 
 | Offset | Size | Description    |
 | ------ | ---- | -------------- |
-| 0x000  | 498  | Boot code      |
-| 0x1F2  | 4    | Total blocks   |
-| 0x1F6  | 4    | Bitmap blocks  |
-| 0x1FA  | 4    | Bitmap offset  |
+| 0x000  | 486  | Boot code      |
+| 0x1E6  | 8    | Total blocks   |
+| 0x1EE  | 8    | Bitmap blocks  |
+| 0x1F6  | 8    | Bitmap offset  |
 | 0x1FE  | 2    | Boot signature |
 
 ## Reserved Area Format
@@ -31,33 +31,45 @@ The reserved area immediately follows the super-block, and spans 2047 blocks. It
 
 The data area is used to store all node and file data. It always starts with the root block at LBA 2048, and it has a total size of `total_blocks - bitmap_blocks - 2048`.
 
-The data for any specific file always consumes sequential blocks in the data area (file fragmentation is not supported), so in the case of appending, if there's not enought free blocks right after the last data block, the entire contents must be rewritten somewhere else.
-
 ### Data Area Node Format
 
 | Offset | Size | Description |
 | ------ | ---- | ----------- |
-| 0x000  | 4    | Type        |
-| 0x004  | 4    | Pointer     |
-| 0x008  | 8    | Size        |
-| 0x010  | 8    | Time        |
-| 0x018  | 480  | Name        |
-| 0x1F8  | 4    | Parent      |
-| 0x1FC  | 4    | Next        |
+| 0x000  | 8    | Index       |
+| 0x008  | 8    | Parent      |
+| 0x010  | 8    | Child       |
+| 0x018  | 8    | Next        |
+| 0x020  | 8    | Size        |
+| 0x028  | 8    | Time        |
+| 0x030  | 4    | Type        |
+| 0x034  | 460  | Name        |
 
-`type` could either be 1, which indicates a directory, or 2, which indicates a file.
-
-`pointer` points to the first data block if it's a file, or points to the first child node if it's a directory.
-
-`size` is the file size in bytes (only applies to files).
-
-`time` is the unix epoch time in which the entry was last modified.
-
-`name` is a 480 character sequence containing the name of the entry.
+`index` is the block index associated with this node.
 
 `parent` contains the index of the node of it's parent directory.
 
+`child` points to the first pointer node if it's a file, or points to the first child node if it's a directory.
+
 `next` contains the index of the node of the next entry in it's parent directory.
+
+`size` is the file size in bytes, or the number of children of a directory.
+
+`time` is the unix epoch time in which the entry was last modified.
+
+`type` could either be 0, which indicates a file, or 1, which indicates a directory.
+
+`name` is a 460 character sequence containing the name of the entry.
+
+### Data Area Pointer Node Format
+
+| Offset | Size | Description |
+| ------ | ---- | ----------- |
+| 0x000  | 504  | Pointer[63] |
+| 0x1F8  | 8    | Next        |
+
+`pointer` contains 63 indices for the file data.
+
+`next` points to the next pointer node.
 
 ## Bitmap Area format
 
