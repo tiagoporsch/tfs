@@ -71,6 +71,8 @@ The data area is used to store all node and file data. It always starts with the
 
 `next` points to the next pointer node.
 
+In order to access a specific `offset` byte in a file, you should skip `(offset / 512) / 63` nodes, look for the pointer number `(offset / 512) % 63)` and get the `offset % 512`th byte in the block.
+
 ## Bitmap Area format
 
 The bitmap area is used to store information about which blocks are used. It has a length of `ceil(total_blocks / 4096)` and ends at the last block, so it starts at `total_blocks - bitmap_blocks`.
