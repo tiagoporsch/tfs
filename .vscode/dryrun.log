@@ -1,0 +1,5 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/home/tiago/Documents/Development/tfs'
+gcc -Wall -Wextra -O2 -o tfstool tfs.c tfstool.c
+make: Leaving directory '/home/tiago/Documents/Development/tfs'
+ 
